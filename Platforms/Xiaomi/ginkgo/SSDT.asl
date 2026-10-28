@@ -281,6 +281,51 @@ DefinitionBlock ("SSDT.aml", "SSDT", 2, "XIAOMI", "GINKGO  ", 3)
 			Method (_PSR, 0, NotSerialized) { Return (0) }   // 0 = sin cargador
 		}
 		
+        Device (QWLN)
+        {
+            Name (_HID, "NICO1010")
+            Name (_UID, 0)
+
+            Name (_CRS, ResourceTemplate ()
+            {
+                Memory32Fixed (ReadWrite, 0x0C800000, 0x00800000)
+                Memory32Fixed (ReadWrite, 0x57500000, 0x00010000)
+
+				// Interrupts
+                Interrupt (ResourceConsumer, Level, ActiveHigh, Exclusive, , , ) { 0x186 }
+                Interrupt (ResourceConsumer, Level, ActiveHigh, Exclusive, , , ) { 0x187 }
+                Interrupt (ResourceConsumer, Level, ActiveHigh, Exclusive, , , ) { 0x188 }
+                Interrupt (ResourceConsumer, Level, ActiveHigh, Exclusive, , , ) { 0x189 }
+                Interrupt (ResourceConsumer, Level, ActiveHigh, Exclusive, , , ) { 0x18A }
+                Interrupt (ResourceConsumer, Level, ActiveHigh, Exclusive, , , ) { 0x18B }
+                Interrupt (ResourceConsumer, Level, ActiveHigh, Exclusive, , , ) { 0x18C }
+                Interrupt (ResourceConsumer, Level, ActiveHigh, Exclusive, , , ) { 0x18D }
+                Interrupt (ResourceConsumer, Level, ActiveHigh, Exclusive, , , ) { 0x18E }
+                Interrupt (ResourceConsumer, Level, ActiveHigh, Exclusive, , , ) { 0x18F }
+                Interrupt (ResourceConsumer, Level, ActiveHigh, Exclusive, , , ) { 0x190 }
+                Interrupt (ResourceConsumer, Level, ActiveHigh, Exclusive, , , ) { 0x191 }
+            })
+        }
+
+		Device (ADSP)
+		{
+			Name (_HID, "NICO1005")
+			Name (_UID, 0)
+
+			Method (_STA, 0, NotSerialized)
+			{
+				Return (0x0F)
+			}
+
+			Name (_CRS, ResourceTemplate ()
+			{
+				Memory32Fixed (ReadWrite, 0x46000000, 0x00200000)
+				Memory32Fixed (ReadWrite, 0x00343000, 0x00001000)
+				Memory32Fixed (ReadWrite, 0x0F111000, 0x00001000)
+				Memory32Fixed (ReadWrite, 0x55300000, 0x02200000)
+			})
+		}
+
 		Device (AMP1)
 		{
 			Name (_HID, "MAX98927")
@@ -289,9 +334,18 @@ DefinitionBlock ("SSDT.aml", "SSDT", 2, "XIAOMI", "GINKGO  ", 3)
 			Name (_CRS, ResourceTemplate ()
 			{
 				Memory32Fixed (ReadWrite, 0x04A84000, 0x00004000)   // GENI SE1
-				Memory32Fixed (ReadWrite, 0x00400000, 0x00C00000)   // TLMM
-				Memory32Fixed (ReadWrite, 0x01400000, 0x001F0000)   // GCC
 			})
+		}
+
+		Device (AUD1)
+		{
+			Name (_HID, "GNKAUD01")
+			Name (_UID, 0)
+
+			Method (_STA, 0, NotSerialized)
+			{
+				Return (0x0F)
+			}
 		}
 
 		Device (BAT0)
