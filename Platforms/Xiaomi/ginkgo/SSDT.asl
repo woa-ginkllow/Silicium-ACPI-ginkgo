@@ -262,6 +262,16 @@ DefinitionBlock ("SSDT.aml", "SSDT", 2, "XIAOMI", "GINKGO  ", 3)
             }
         }
 
+		Device (SPM1)
+		{
+			Name (_HID, "GNKSPM01")
+			Name (_UID, 0)
+			Method (_STA, 0, NotSerialized)
+			{
+				Return (0x0F)
+			}
+		}
+
 		Device (TSC1)
 		{
 			Name (_HID, "NT03672A")
