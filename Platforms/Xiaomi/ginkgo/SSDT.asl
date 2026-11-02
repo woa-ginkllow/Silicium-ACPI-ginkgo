@@ -262,16 +262,6 @@ DefinitionBlock ("SSDT.aml", "SSDT", 2, "XIAOMI", "GINKGO  ", 3)
             }
         }
 
-		Device (SPM1)
-		{
-			Name (_HID, "GNKSPM01")
-			Name (_UID, 0)
-			Method (_STA, 0, NotSerialized)
-			{
-				Return (0x0F)
-			}
-		}
-
 		Device (TSC1)
 		{
 			Name (_HID, "NT03672A")
@@ -282,13 +272,6 @@ DefinitionBlock ("SSDT.aml", "SSDT", 2, "XIAOMI", "GINKGO  ", 3)
 				Memory32Fixed (ReadWrite, 0x0400000,  0xc00000)   // tlmm
 				Memory32Fixed (ReadWrite, 0x1400000,  0x1f0000)    // gcc
 			})
-		}
-		
-		Device (ADP1)
-		{
-			Name (_HID, "ACPI0003")
-			Name (_PCL, Package () { \_SB })
-			Method (_PSR, 0, NotSerialized) { Return (0) }   // 0 = sin cargador
 		}
 		
         Device (QWLN)
@@ -330,6 +313,7 @@ DefinitionBlock ("SSDT.aml", "SSDT", 2, "XIAOMI", "GINKGO  ", 3)
 			Name (_CRS, ResourceTemplate ()
 			{
 				Memory32Fixed (ReadWrite, 0x46000000, 0x00200000)
+				Memory32Fixed (ReadWrite, 0x4B000000, 0x07E00000)
 				Memory32Fixed (ReadWrite, 0x00343000, 0x00001000)
 				Memory32Fixed (ReadWrite, 0x0F111000, 0x00001000)
 				Memory32Fixed (ReadWrite, 0x55300000, 0x02200000)
@@ -357,92 +341,7 @@ DefinitionBlock ("SSDT.aml", "SSDT", 2, "XIAOMI", "GINKGO  ", 3)
 				Return (0x0F)
 			}
 		}
-
-		Device (BAT0)
-		{
-			Name (_HID, EisaId ("PNP0C0A"))
-			Name (_UID, 1)
-			Name (_PCL, Package () { \_SB })
-
-			Method (_STA, 0, NotSerialized) { Return (0x1F) }
-
-			Method (_BIF, 0, NotSerialized)
-			{
-				Return (Package () {
-					1,        // unidad: mAh
-					4000,     // capacidad de diseño
-					4000,     // última carga completa
-					1,        // recargable
-					3870,     // voltaje de diseño (mV)
-					600,      // aviso
-					300,      // bajo
-					10, 10,   // granularidades
-					"BM46", "000001", "Li-poly", "Colight"
-				})
-			}
-
-			Method (_BIX, 0, NotSerialized)
-			{
-				Return (Package () {
-					0, 1, 4000, 4000, 1, 3870, 600, 300,
-					0,        // ciclos
-					95, 500, 100, 0, 0,
-					10, 10,
-					"BM46", "000001", "Li-poly", "Colight", 0
-				})
-			}
-
-			Method (_BST, 0, NotSerialized)
-			{
-				Return (Package () {
-					1,        // descargando
-					500,      // mA
-					3200,     // restante (80%)
-					3900      // mV
-				})
-			}
-		}
-		
-		Name (OCVT, Package ()      // { mV, % }, de mayor a menor
-		{
-			4383, 100,
-			4264, 90,
-			4150, 80,
-			4048, 70,
-			3960, 60,
-			3869, 50,
-			3828, 40,
-			3803, 30,
-			3768, 20,
-			3706, 10,
-			3653, 5,
-			3547, 3,
-			3337, 1,
-			3000, 0
-		})
-		
-		Method (V2P, 1, NotSerialized)     // Arg0 = mV, devuelve %
-		{
-			If (LGreaterEqual (Arg0, 4383)) { Return (100) }
-			If (LLessEqual (Arg0, 3000)) { Return (0) }
-			Store (0, Local0)
-			While (LLess (Local0, 13))
-			{
-				// mV del par inferior
-				Store (DerefOf (Index (OCVT, Add (Multiply (Local0, 2), 2))), Local1)
-				If (LGreaterEqual (Arg0, Local1))
-				{
-					// mV superior, % superior, % inferior
-					Store (DerefOf (Index (OCVT, Multiply (Local0, 2))), Local2)
-					Store (DerefOf (Index (OCVT, Add (Multiply (Local0, 2), 1))), Local3)
-					Store (DerefOf (Index (OCVT, Add (Multiply (Local0, 2), 3))), Local4)
-					Divide (Multiply (Subtract (Arg0, Local1), Subtract (Local3, Local4)),
-							Subtract (Local2, Local1), Local5, Local6)   // Local6 = cociente
-					Return (Add (Local4, Local6))
-				}
-				Increment (Local0)
-			}
-			Return (0)
-		}
+		Include ("spmiprobe_acpi.asl")
+		Include ("ginkgo_battery.asl")
     }
 }
