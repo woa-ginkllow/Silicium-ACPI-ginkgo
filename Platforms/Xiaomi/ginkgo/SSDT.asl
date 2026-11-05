@@ -341,6 +341,18 @@ DefinitionBlock ("SSDT.aml", "SSDT", 2, "XIAOMI", "GINKGO  ", 3)
 				Return (0x0F)
 			}
 		}
+		
+		Device (GPU0)
+		{
+			Name (_HID, "GNKDSP01")
+			Name (_UID, 0)
+
+			Method (_STA, 0, NotSerialized)
+			{
+				Return (0x0F)
+			}
+		}
+
 		Include ("spmiprobe_acpi.asl")
 		Include ("ginkgo_battery.asl")
     }
