@@ -342,6 +342,17 @@ DefinitionBlock ("SSDT.aml", "SSDT", 2, "XIAOMI", "GINKGO  ", 3)
 			}
 		}
 		
+		Device (GPR0)
+		{
+			Name (_HID, "GNKGPU01")
+			Name (_UID, 0)
+
+			Method (_STA, 0, NotSerialized)
+			{
+				Return (0x0F)
+			}
+		}
+
 		Device (GPU0)
 		{
 			Name (_HID, "GNKDSP01")
@@ -350,6 +361,18 @@ DefinitionBlock ("SSDT.aml", "SSDT", 2, "XIAOMI", "GINKGO  ", 3)
 			Method (_STA, 0, NotSerialized)
 			{
 				Return (0x0F)
+			}
+			
+			// Lista de salidas: bit31 = id de firmware, tipo 4 (digital interno)
+			Method (_DOD, 0, NotSerialized)
+			{
+				Return (Package (0x01) { 0x80000400 })
+			}
+
+			Device (LCD0)
+			{
+				Name (_ADR, 0x80000400)
+				Method (_STA, 0, NotSerialized) { Return (0x0F) }
 			}
 		}
 
